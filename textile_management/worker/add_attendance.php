@@ -1,0 +1,88 @@
+<?php
+include("ses.php");
+?>
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Online Textile management system</title>
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@4.6.2/dist/css/bootstrap.min.css">
+  <script src="https://cdn.jsdelivr.net/npm/jquery@3.7.1/dist/jquery.slim.min.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/popper.js@1.16.1/dist/umd/popper.min.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/bootstrap@4.6.2/dist/js/bootstrap.bundle.min.js"></script>
+<style>
+    .home-main
+    {
+        background-repeat:no-repeat;
+        background-size:100% 100%;
+        background-attachment:fixed;
+        height:100vh;
+        width:100%;
+    }
+    h1
+    {
+        
+        text-align:center;
+       
+    }
+</style>
+</head>
+<body class="home-main">
+    <?php
+    include("header.php");
+    date_default_timezone_set("Asia/Calcutta");
+    include("../db.php");
+    $d=date('Y-m-d');
+    $sql="select * from attendance where mdate='$d' and worker_id=".$_SESSION["wid"];
+    $result=mysqli_query($con,$sql);
+    $row=mysqli_fetch_assoc($result);
+    ?>
+    <div class="container">
+        <div class="row">
+            <div class="col-md-6 offset-md-3">
+                <div class="card my-4" style="background-color:rgba(255,255,255,0.9);">
+                    <div class="card-body">
+                <h3 class="text-primary text-center my-1">Add Attendance</h3>
+                <form method="post" action="verify.php" autocomplete="off">
+                <div class="form-group">
+                    <label for="pwd" class="text-dark">Date:</label>
+                    <input type="date" class="form-control" name="mdate" value="<?=date('Y-m-d')?>" readonly id="pwd" required>
+                </div>
+                <div class="form-group">
+                    <label for="pwd" class="text-dark">Category:</label>
+                    <select name="category" class="form-control" required>
+                        <?php
+                        if($row['in_time']=="")
+                        {
+                            echo "<option>In time</option>";
+                        }
+                        if($row['out_time']=="" && $row["in_time"]!="")
+                        {
+                            echo "<option>Out time</option>";
+                        }
+                        ?>
+                    </select>
+                </div>
+                <div class="form-group">
+                    <label for="pwd" class="text-dark">time:</label>
+                    <input type="text" class="form-control" name="attendance_time" value="<?=date('H:i')?>" readonly id="pwd" required>
+                </div>
+                <button type="submit" name="add_attendance" class="btn btn-primary btn-block">Add attendance</button>
+                </form>
+                
+                </div>
+                </div>
+                <?php
+                error_reporting(0);
+                if($row['out_time']!="" && $row["in_time"]!="" && $row["mdate"]==$d)
+                {
+                    echo "<p class='text-danger text-center'>Today Attendance added successfully</p>";
+                }
+                ?>
+            </div>
+        </div>
+    </div>
+
+</body>
+</html>
